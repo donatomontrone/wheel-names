@@ -4,6 +4,43 @@ const radius = canvas.width / 2;
 let names = [];
 let currentAngle = 0;
 let spinning = false;
+const sliceColors = [
+  '#feca57', // giallo
+  '#48dbfb', // azzurro
+  '#1dd1a1', // verde acqua
+  '#ff6b6b', // rosso
+  '#a29bfe', // lilla
+  '#fd79a8', // rosa
+  '#00b894', // verde
+  '#e17055', // arancione
+  '#636e72', // grigio scuro
+  '#ffeaa7'  // giallo chiaro
+];
+
+// Ruota lenta con valori casuali all'avvio
+let idleNames = ["Mario", "Luca", "Anna", "Sara", "Paolo"];
+let idleAngle = 0;
+let idleSpinActive = true;
+
+function startIdleSpin() {
+  names = [...idleNames];
+  drawWheel();
+  function idleSpin() {
+    if (!idleSpinActive) return;
+    idleAngle += 0.005; // velocità lenta
+    currentAngle = idleAngle;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.save();
+    ctx.translate(radius, radius);
+    ctx.rotate(currentAngle);
+    ctx.translate(-radius, -radius);
+    drawWheel();
+    ctx.restore();
+    requestAnimationFrame(idleSpin);
+  }
+  idleSpin();
+}
+startIdleSpin();
 
 function drawWheel() {
   const sliceAngle = (2 * Math.PI) / names.length;
@@ -12,7 +49,7 @@ function drawWheel() {
   for (let i = 0; i < names.length; i++) {
     ctx.beginPath();
     ctx.moveTo(radius, radius);
-    ctx.fillStyle = i % 2 === 0 ? '#feca57' : '#48dbfb';
+    ctx.fillStyle = sliceColors[i % sliceColors.length];
     ctx.arc(radius, radius, radius - 10, i * sliceAngle, (i + 1) * sliceAngle);
     ctx.fill();
     ctx.save();
@@ -25,24 +62,39 @@ function drawWheel() {
     ctx.restore();
   }
 
- // ctx.beginPath();
-  //ctx.arc(radius, radius, radius - 5, 0, 2 * Math.PI);
-  //ctx.strokeStyle = '#222';
-  //ctx.lineWidth = 10;
-  //ctx.stroke();
+  // --- DISEGNA PALETTI TRA GLI SPICCHI ---
+  ctx.save();
+  ctx.translate(radius, radius);
+  for (let i = 0; i < names.length; i++) {
+    ctx.save();
+    ctx.rotate(i * sliceAngle);
+    ctx.beginPath();
+    ctx.moveTo(radius - 10, 0); // dal bordo interno
+    ctx.lineTo(radius, 0);      // al bordo esterno
+    ctx.strokeStyle = '#fff';
+    ctx.lineWidth = 3;
+    ctx.shadowColor = '#222';
+    ctx.shadowBlur = 2;
+    ctx.stroke();
+    ctx.restore();
+  }
+  ctx.restore();
 }
 
 function spinWheel() {
   if (spinning) return;
   const input = document.getElementById('nameInput').value.trim();
-  names = input.split('\n').filter(name => name.trim() !== '');
+  names = input.split('\n').map(n => n.trim()).filter(n => n !== '');
+  console.log(names);
   if (names.length < 2) {
     alert("Inserisci almeno 2 nomi.");
+      console.log(names);
     return;
   }
 
+  drawWheel();
+
   const indicator = document.getElementById('indicator');
-  let lastIndex = -1;
   const tickSound = document.getElementById('tickSound');
   spinning = true;
   let rotation = 0;
@@ -50,6 +102,7 @@ function spinWheel() {
   const targetAngle = Math.random() * 360 + 360 * 5;
   const duration = 4000;
   const start = performance.now();
+  let lastIndex = -1;
 
   function animate(now) {
     const elapsed = now - start;
@@ -66,33 +119,32 @@ function spinWheel() {
     drawWheel();
     ctx.restore();
 
-    const currentIndex = Math.floor((2 * Math.PI - (currentAngle % (2 * Math.PI))) / sliceAngle);
-    if (currentIndex !== lastIndex) {
-      tickSound.currentTime = 0;
-      tickSound.play();
+    const index = Math.floor(((2 * Math.PI - (currentAngle - Math.PI / 2) + 2 * Math.PI) % (2 * Math.PI)) / sliceAngle);
+
+    if (index !== lastIndex) {
+      //tickSound.currentTime = 0;
+      //tickSound.play();
       indicator.classList.remove('twitch');
       void indicator.offsetWidth;
       indicator.classList.add('twitch');
-      lastIndex = currentIndex;
+      lastIndex = index;
     }
 
     if (progress < 1) {
       requestAnimationFrame(animate);
     } else {
       spinning = false;
-      showWinner();
+      showWinnerFromAngle();
     }
   }
 
   requestAnimationFrame(animate);
 }
 
-function showWinner() {
-  const sliceAngle = 2 * Math.PI / names.length;
-  const normalizedAngle = (2 * Math.PI - (currentAngle % (2 * Math.PI))) % (2 * Math.PI);
-  const index = Math.floor(normalizedAngle / sliceAngle);
+function showWinner(index) {
   const winner = names[index];
-  document.getElementById('popupName').textContent = winner;
+    console.log(names);
+  document.getElementById('popupName').textContent = winner || 'Errore';
   document.getElementById('winnerPopup').classList.remove('hidden');
   launchConfetti();
 }
@@ -113,11 +165,39 @@ function launchConfetti() {
   }
 }
 
-ctx.fillStyle = '#ddd';
-ctx.beginPath();
-ctx.arc(radius, radius, radius, 0, 2 * Math.PI);
-ctx.fill();
-ctx.fillStyle = '#333';
-ctx.font = '18px sans-serif';
-ctx.textAlign = 'center';
-ctx.fillText('Inserisci i nomi e premi "Gira la Ruota"', radius, radius);
+function showWinnerFromAngle() {
+  if (!Array.isArray(names) || names.length < 2) {
+    document.getElementById('popupName').textContent = "Inserisci almeno 2 nomi validi";
+    document.getElementById('winnerPopup').classList.remove('hidden');
+    return;
+  }
+
+  const sliceAngle = (2 * Math.PI) / names.length;
+
+  // L'angolo verso nord (alto) è -Math.PI/2. Ruotiamo all'indietro di currentAngle.
+  let northAngle = (-Math.PI / 2 - currentAngle) % (2 * Math.PI);
+  if (northAngle < 0) northAngle += 2 * Math.PI;
+
+  // Trova il settore corrispondente
+  let index = Math.floor(northAngle / sliceAngle) % names.length;
+
+  const winner = names[index];
+
+  document.getElementById('popupName').textContent = winner || "Errore nel calcolo";
+  document.getElementById('winnerPopup').classList.remove('hidden');
+  launchConfetti();
+}
+
+// Aggiorna la ruota in tempo reale quando cambia la textarea
+document.getElementById('nameInput').addEventListener('input', function() {
+  const input = this.value.trim();
+  names = input.split('\n').map(n => n.trim()).filter(n => n !== '');
+  if (names.length > 0) {
+    idleSpinActive = false; // Ferma la ruota idle
+    drawWheel();
+  } else {
+    idleSpinActive = true;
+    startIdleSpin();
+  }
+});
+
