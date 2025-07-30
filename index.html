@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>Wheel Picker</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>Wheel Picker</h1>
+  <textarea id="nameInput" placeholder="Inserisci un nome per riga"></textarea><br>
+  <button onclick="spinWheel()">Gira la Ruota</button>
+  <div id="container">
+    <canvas id="wheel" width="400" height="400"></canvas>
+    <div id="indicator"></div>
+  </div>
+  <audio id="tickSound" src="tick.mp3" preload="auto"></audio>
+  <div id="winnerPopup" class="popup hidden">
+    <div class="popup-content">
+      <h2>🎉 Vincitore! 🎉</h2>
+      <p id="popupName"></p>
+      <button onclick="closePopup()">Chiudi</button>
+    </div>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
