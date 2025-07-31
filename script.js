@@ -1,6 +1,6 @@
 const canvas = document.getElementById('wheel');
 const ctx = canvas.getContext('2d');
-const radius = canvas.width / 2;
+let radius = canvas.width / 2;
 let names = [];
 let currentAngle = 0;
 let spinning = false;
@@ -200,4 +200,15 @@ document.getElementById('nameInput').addEventListener('input', function() {
     startIdleSpin();
   }
 });
+
+function resizeCanvas() {
+  const size = Math.min(window.innerWidth * 0.9, window.innerHeight * 0.9);
+  canvas.width = size;
+  canvas.height = size;
+  radius = canvas.width / 2;
+  drawWheel();
+}
+
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();
 
