@@ -122,11 +122,14 @@ function spinWheel() {
     const index = Math.floor(((2 * Math.PI - (currentAngle - Math.PI / 2) + 2 * Math.PI) % (2 * Math.PI)) / sliceAngle);
 
     if (index !== lastIndex) {
-      //tickSound.currentTime = 0;
-      //tickSound.play();
       indicator.classList.remove('twitch');
-      void indicator.offsetWidth;
+      void indicator.offsetWidth; // forza il reflow per ri-triggerare l'animazione
       indicator.classList.add('twitch');
+      // Suono tick
+      if (tickSound) {
+        tickSound.currentTime = 0;
+        tickSound.play();
+      }
       lastIndex = index;
     }
 

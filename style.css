@@ -1,6 +1,6 @@
 body {
   font-family: 'Segoe UI', sans-serif;
-  background: linear-gradient(to bottom right, #1f1c2c, #928dab);
+  background: linear-gradient(to bottom right, #1f1c2c, #6552c4);
   color: #fff;
   margin: 0;
   padding: 0;
@@ -85,6 +85,7 @@ canvas {
   50% { transform: translateX(-50%) rotate(-10deg); }
   100% { transform: translateX(-50%) rotate(0deg); }
 }
+
 .popup {
   position: fixed;
   top: 0;
