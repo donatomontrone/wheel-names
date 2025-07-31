@@ -134,6 +134,14 @@ canvas {
   0%   { transform: translateY(0) rotate(0deg); opacity: 1; }
   100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
 }
+#wheel {
+  width: 90vw;
+  max-width: 400px;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+  touch-action: none;
+}
 @media (max-width: 480px) {
   h1 {
     font-size: 1.8rem;

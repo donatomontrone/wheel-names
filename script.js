@@ -204,3 +204,15 @@ document.getElementById('nameInput').addEventListener('input', function() {
   }
 });
 
+function resizeCanvas() {
+  const size = Math.min(window.innerWidth * 0.9, 400);
+  canvas.width = size;
+  canvas.height = size;
+}
+// All'inizio del file, dopo aver preso il canvas:
+resizeCanvas();
+window.addEventListener('resize', () => {
+  resizeCanvas();
+  drawWheel();
+});
+
