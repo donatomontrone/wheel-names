@@ -122,11 +122,28 @@ function spinWheel() {
     const index = Math.floor(((2 * Math.PI - (currentAngle - Math.PI / 2) + 2 * Math.PI) % (2 * Math.PI)) / sliceAngle);
 
     if (index !== lastIndex) {
-      //tickSound.currentTime = 0;
-      //tickSound.play();
-      indicator.classList.remove('twitch');
-      void indicator.offsetWidth;
-      indicator.classList.add('twitch');
+      tickSound.currentTime = 0;
+      tickSound.play();
+
+      const indicator = document.getElementById('indicator');
+
+      // Interrompi eventuali animazioni precedenti
+      if (indicator._oscTimeout) {
+        clearTimeout(indicator._oscTimeout);
+        indicator._oscTimeout = null;
+      }
+
+      // Oscillazione breve e costante
+      const amp = radius * 0.04; // valore piccolo e costante
+      indicator.style.transition = 'transform 0.08s cubic-bezier(.68,-0.55,.27,1.55)';
+      indicator.style.transform = `translateX(-50%) rotate(-${amp}deg)`;
+
+      indicator._oscTimeout = setTimeout(() => {
+        indicator.style.transition = 'transform 0.12s cubic-bezier(.68,-0.55,.27,1.55)';
+        indicator.style.transform = 'translateX(-50%) rotate(0deg)';
+        indicator._oscTimeout = null;
+      }, 80);
+
       lastIndex = index;
     }
 
