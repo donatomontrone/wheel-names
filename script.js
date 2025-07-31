@@ -1,6 +1,6 @@
 const canvas = document.getElementById('wheel');
 const ctx = canvas.getContext('2d');
-let radius = canvas.width / 2;
+const radius = canvas.width / 2;
 let names = [];
 let currentAngle = 0;
 let spinning = false;
@@ -122,14 +122,11 @@ function spinWheel() {
     const index = Math.floor(((2 * Math.PI - (currentAngle - Math.PI / 2) + 2 * Math.PI) % (2 * Math.PI)) / sliceAngle);
 
     if (index !== lastIndex) {
+      //tickSound.currentTime = 0;
+      //tickSound.play();
       indicator.classList.remove('twitch');
-      void indicator.offsetWidth; // forza il reflow per ri-triggerare l'animazione
+      void indicator.offsetWidth;
       indicator.classList.add('twitch');
-      // Suono tick
-      if (tickSound) {
-        tickSound.currentTime = 0;
-        tickSound.play();
-      }
       lastIndex = index;
     }
 
@@ -203,15 +200,4 @@ document.getElementById('nameInput').addEventListener('input', function() {
     startIdleSpin();
   }
 });
-
-function resizeCanvas() {
-  const size = Math.min(window.innerWidth * 0.98, window.innerHeight * 0.98);
-  canvas.width = size;
-  canvas.height = size;
-  radius = canvas.width / 2;
-  drawWheel();
-}
-
-resizeCanvas();
-window.addEventListener('resize', resizeCanvas);
 
