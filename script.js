@@ -205,15 +205,13 @@ document.getElementById('nameInput').addEventListener('input', function() {
 });
 
 function resizeCanvas() {
-  const size = Math.min(window.innerWidth * 0.9, 400);
+  const size = Math.min(window.innerWidth * 0.98, window.innerHeight * 0.98);
   canvas.width = size;
   canvas.height = size;
-  radius = canvas.width / 2; // <-- aggiorna il raggio!
-}
-// All'inizio del file, dopo aver preso il canvas:
-resizeCanvas();
-window.addEventListener('resize', () => {
-  resizeCanvas();
+  radius = canvas.width / 2;
   drawWheel();
-});
+}
+
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
 
