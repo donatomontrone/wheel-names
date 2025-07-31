@@ -1,6 +1,6 @@
 const canvas = document.getElementById('wheel');
 const ctx = canvas.getContext('2d');
-const radius = canvas.width / 2;
+let radius = canvas.width / 2;
 let names = [];
 let currentAngle = 0;
 let spinning = false;
@@ -208,6 +208,7 @@ function resizeCanvas() {
   const size = Math.min(window.innerWidth * 0.9, 400);
   canvas.width = size;
   canvas.height = size;
+  radius = canvas.width / 2; // <-- aggiorna il raggio!
 }
 // All'inizio del file, dopo aver preso il canvas:
 resizeCanvas();
